@@ -1,6 +1,10 @@
 const userModel = require("../models/user");
 const postModel = require("../models/post");
 
+    async function home() {
+        const posts = await postModel.find().populate("user");
+        return posts
+    }
 
     async function newPost({email,content}){
         try{
@@ -14,6 +18,7 @@ const postModel = require("../models/post");
             
             user.posts.push(post._id);
             await user.save();
+            return post;
         }catch(error){
             console.error("error in newpost service:",error);
             throw error;
@@ -42,18 +47,20 @@ const postModel = require("../models/post");
 
     async function like({postid,userid}){
         try {
-            let post = await postModel.findOne({_id:postid}).populate("user");
+            let post = await postModel.findOne({_id:postid});
             if (!post) throw new Error("post not found");
-            
-            const index = post.likes.indexOf(userid);
 
-            if(index===-1){
-            post.likes.push(userid);
+            let isliked = post.likes.includes(userid);
+
+            if (isliked){
+                post.likes.pull(userid);
+            }else{
+                post.likes.push(userid);
             }
-            else{
-            post.likes.splice(index,1)
-            }
+
             await post.save();
+
+            return {isliked:!isliked,likeCount:post.likes.length};
         }catch(error){
             console.error("error in like postService:",error);
             throw error;
@@ -61,6 +68,7 @@ const postModel = require("../models/post");
     }
 
 module.exports = {
+    home,
     newPost,
     edit,
     update,

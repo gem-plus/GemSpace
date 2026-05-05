@@ -1,13 +1,63 @@
+import { useEffect, useState } from "react";
+import NavBar from "../components/navbar";
+import { useLocation, useNavigate } from "react-router-dom";
+
 function Edit() {
+  const [content, setContent] = useState("");
+  const location = useLocation();
+  const state = location.state;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    async function fetchContent() {
+      const res = await fetch(`http://localhost:3000/edit/${state.postID}`, {
+        method: "get",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+      setContent(data.post.content);
+    }
+    fetchContent();
+  }, [state.postID]);
+
+  function handleChange(e) {
+    setContent(e.target.value);
+  }
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    try {
+      const res = await fetch(`http://localhost:3000/update/${state.postID}`, {
+        method: "post",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: content }),
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        navigate("/profile");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <>
+      <NavBar />
       <h5 className="post-text">Edit your post</h5>
-      <div className="post-form">
+      <form className="post-form" onSubmit={(e) => handleSubmit(e)}>
         <textarea
           className="post-textarea"
-        ></textarea>
+          name="content"
+          value={content}
+          onChange={handleChange}
+        >
+        </textarea>
         <input className="post-submit" type="submit" value="Update post" />
-      </div>
+      </form>
     </>
   );
 }

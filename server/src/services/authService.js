@@ -4,9 +4,8 @@ const jwt = require("jsonwebtoken");
 const jwtSecret = process.env.JWT_SECRET;
 
 async function register({username ,name , age , email , password}){
-        try{
                 let user = await userModel.findOne({email});
-                if (user) return null;
+                if (user)  throw new Error("duplicate");
                 
                 const salt = await bcrypt.genSalt(10);
                 const hash = await bcrypt.hash(password, salt);
@@ -24,14 +23,8 @@ async function register({username ,name , age , email , password}){
                 }, jwtSecret,{expiresIn:"1h"});
         
                 return token;
-        }catch(err){
-                console.error("error in registering new user:",err);
-                return null;
-                
-        }
-
-        
 }
+
 async function login({email , password}){
         try{
                 let user = await userModel.findOne({email});

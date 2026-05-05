@@ -4,17 +4,20 @@
 
 body {
   font-family: "Inter", system-ui, sans-serif;
-  background-color: rgba(0, 0, 0, 0.805);
-  color: white;
-  padding: 10px;
+  background-color: #ffffff;
+  color: #000000;
+  margin: 0;
+  padding: 0;
 }
 
 .auth-header {
   margin-bottom: 5px;
+  margin-left: 10px;
   font-size: 3em;
 }
 .post-header {
   margin-bottom: 5px;
+  margin-left: 10px;
   font-size: 3em;
 }
 
@@ -29,7 +32,7 @@ body {
 
 .auth-form .auth-item {
   border-radius: 5px;
-  border: none;
+  border: 2 solid #000000;
   margin: 6px;
   padding: 6px 8px;
   width: 190px;
@@ -37,7 +40,7 @@ body {
 }
 
 .auth-form .auth-submit {
-  background-color: hsla(225, 100%, 50%, 0.838);
+  background-color: #fca311;
   border-radius: 5px;
   border: none;
   margin: 6px;
@@ -46,12 +49,16 @@ body {
   height: 30px;
 }
 .auth-form .auth-submit:hover {
-  background-color: yellow;
+  background-color: #e59400;
+}
+
+.posts {
+  margin: 10px;
 }
 
 .post-form .post-textarea {
   background-color: transparent;
-  color: white;
+  color: #000000;
   border: 2px solid rgba(0, 0, 0, 0.573);
   border-radius: 7px;
   resize: none;
@@ -62,7 +69,7 @@ body {
 
 .post-form .post-submit {
   display: block;
-  background-color: hsla(225, 100%, 50%, 0.838);
+  background-color: #fca311;
   border-radius: 5px;
   border: none;
   margin-top: 10px;
@@ -73,16 +80,28 @@ body {
   display: inline-block;
   font-size: small;
   margin-left: 15px;
+  margin-left: 10px;
   margin-bottom: 0px;
 }
 
+.post {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 30px;
+  align-items: flex-start;
+}
+
 .post-post {
-  background-color: rgba(0, 0, 0, 0.541);
-  box-shadow: 10px 10px 5px 5px rgba(0, 0, 0, 0.400) ;
+  background-color: #e5e5e5;
+  box-shadow: 10px 10px 5px 5px rgba(0, 0, 0, 0.4);
   border: 2px solid rgba(0, 0, 0, 0.541);
+  display: flex;
+  flex-direction: column;
   border-radius: 5px;
+  margin-left: 10px;
   padding: 6px 8px;
-  width: 330px;
+  width: 345px;
+  min-height: 130px;
   height: auto;
 }
 .post-post .post-username {
@@ -94,6 +113,12 @@ body {
   margin: 2px;
   font-size: small;
   letter-spacing: -0.025em;
+  max-height: 80px;
+  overflow-y: auto;
+}
+
+.post-footer {
+  margin-top: auto;
 }
 .post-post .post-likecount {
   margin-top: 3px;
@@ -102,14 +127,90 @@ body {
 
 .post-button {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 220px;
+  margin-top: 5px;
 }
 .post-post .post-likebtn {
   padding: 2px 10px;
+  margin-bottom: 0px;
 }
 
 .post-post .post-editbtn {
   padding: 2px 10px;
+  margin-bottom: 0px;
   color: red;
+}
+
+.logout {
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logout .item {
+  display: inline-block;
+  border-radius: 5px;
+  font-size: small;
+  background-color: #a20000;
+}
+
+.navbar {
+  height: 60px;
+  padding: 10px;
+  margin: 0;
+  background-color: #14213d;
+  color: #ffffff;
+  list-style-type: none;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.navbar .navbar-item-right {
+  padding: 3px 20px;
+}
+
+.navbar .navbar-item-right:hover {
+  color: #fca311;
+  cursor: pointer;
+}
+
+.navbar .navbar-item-left {
+  margin-right: auto;
+}
+
+.navbar .plain-text {
+  text-decoration: none;
+  color: inherit;
+}
+.navbar .navbar-item-left .logo {
+  filter: invert(1);
+  height: 42px;
+  width: auto;
+  display: block;
+  image-rendering: auto;
+}
+
+.home {
+  background-color: hsla(0, 0%, 25%, 0.452);
+  padding-top: 100px;
+}
+
+.home .home-home {
+  border: 2px solid #14213d;
+  border-radius: 5px;
+  background-color: #e5e5e5;
+  min-height: 120px;
+  padding: 6px 8px;
+  margin: 10px 0px 10px 10px;
+}
+
+.home .home-username {
+  color: #0096ff;
+}
+
+.home .home-content {
+  margin-left: 7px;
+  color: #000000;
 }
