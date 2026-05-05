@@ -15,7 +15,7 @@ function Profile() {
 
   useEffect(() => {
     async function checkAuth() {
-      const res = await fetch("http://localhost:3000/profile", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}profile`, {
         credentials: "include",
       });
       if (res.status === 401) navigate("/login");
@@ -30,7 +30,7 @@ function Profile() {
 
   async function handleLogout() {
     try {
-      const res = await fetch("http://localhost:3000/logout", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}logout`, {
         method: "GET",
         credentials: "include",
       });
@@ -50,7 +50,7 @@ function Profile() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:3000/post", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}post`, {
         method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
@@ -68,7 +68,7 @@ function Profile() {
 
   async function handleLike(postID) {
     try {
-      const res = await fetch(`http://localhost:3000/like/${postID}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}${postID}`, {
         method: "post",
         credentials: "include",
       });

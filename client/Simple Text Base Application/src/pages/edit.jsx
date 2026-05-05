@@ -10,7 +10,7 @@ function Edit() {
 
   useEffect(() => {
     async function fetchContent() {
-      const res = await fetch(`http://localhost:3000/edit/${state.postID}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}${state.postID}`, {
         method: "get",
         credentials: "include",
       });
@@ -29,7 +29,7 @@ function Edit() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`http://localhost:3000/update/${state.postID}`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}${state.postID}`, {
         method: "post",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ content: content }),
