@@ -1,10 +1,56 @@
 const express = require("express");
 const router = express.Router();
+const jwt = require("jsonwebtoken");
+const passport = require("passport");
 const { isLoggedIn } = require("../middleware/auth");
 const authService = require("../services/authService");
 const postService = require("../services/postService");
 
+router.get("/me",isLoggedIn,(req,res)=>{
+    return res.json({
+        success:true,
+        id:req.user.userid
+    })
+});
 
+router.get("/check",(req,res)=>{
+    const token = req.cookies.token;
+
+    if (!token) return res.status(401).json({ success: false, message: "Invalid credentials" });
+
+    try {
+        const decode = jwt.verify(token,process.env.JWT_SECRET);
+
+        return res.status(201).json({
+            success: true,
+            authenticated: true
+        })
+        
+    } catch (err) {
+        return res.status(401).json({ success: false, message: "Invalid credentials" });    
+    }
+})
+
+router.get("/auth/google", 
+    passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+router.get("/auth/google/callback",
+    passport.authenticate("google", { failureRedirect: "/auth" }),
+    (req, res) => {
+        const token = jwt.sign(
+            { email: req.user.email, userid: req.user._id },
+            process.env.JWT_SECRET,
+            { expiresIn: "1h" }
+        );
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 3600000
+        });
+        res.redirect("http://localhost:5173/profile");
+    }
+);
 
 router.post("/register",async (req,res)=>{
     try{
@@ -20,7 +66,7 @@ router.post("/register",async (req,res)=>{
         }
     }catch(error){
        if (error.message==="duplicate"){
-        return res.status(409).json({ success: false, message: "User already exists" });
+        return res.status(409).json({ success: false, message: "duplicate user" });
        }
         return res.status(500).json({ success: false, message: "Something went wrong" });
     }

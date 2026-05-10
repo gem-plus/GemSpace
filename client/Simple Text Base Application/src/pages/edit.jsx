@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import NavBar from "../components/navbar";
 import { useLocation, useNavigate } from "react-router-dom";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+
 
 function Edit() {
   const [content, setContent] = useState("");
@@ -10,10 +12,13 @@ function Edit() {
 
   useEffect(() => {
     async function fetchContent() {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}${state.postID}`, {
-        method: "get",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/edit/${state.postID}`,
+        {
+          method: "get",
+          credentials: "include",
+        },
+      );
 
       const data = await res.json();
       setContent(data.post.content);
@@ -29,12 +34,15 @@ function Edit() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}${state.postID}`, {
-        method: "post",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ content: content }),
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/update/${state.postID}`,
+        {
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ content: content }),
+          credentials: "include",
+        },
+      );
       const data = await res.json();
       if (data.success) {
         navigate("/profile");
@@ -46,18 +54,20 @@ function Edit() {
 
   return (
     <>
-      <NavBar />
-      <h5 className="post-text">Edit your post</h5>
-      <form className="post-form" onSubmit={(e) => handleSubmit(e)}>
-        <textarea
-          className="post-textarea"
+    <div className="m-10">
+      <h5 className="text-2xl ">Edit your post</h5>
+      <form onSubmit={handleSubmit} className="mt-3">
+        <Textarea 
+          className="w-1/4 "
           name="content"
           value={content}
           onChange={handleChange}
-        >
-        </textarea>
-        <input className="post-submit" type="submit" value="Update post" />
+        />
+        <Button className="mt-2" type="submit">
+          Edit post
+        </Button>
       </form>
+    </div>
     </>
   );
 }
