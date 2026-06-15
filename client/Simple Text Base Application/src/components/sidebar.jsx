@@ -27,10 +27,10 @@ function AppSidebar() {
         method: "GET",
         credentials: "include",
       });
-      if (!res.ok) throw new Error("logout failed");
+      if (!res.ok) throw new Error("logout failed"); // when server rejects req
       navigate("/auth");
     } catch (err) {
-      if (err.message === "logout failed") navigate("/profile");
+      if (err.message === "logout failed") navigate("/profile"); //if fetch fails 
     }
   }
 

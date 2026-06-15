@@ -3,6 +3,7 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
 const { isLoggedIn } = require("../middleware/auth");
+const { limiter } = require("../middleware/rateLimiter");
 const authService = require("../services/authService");
 const postService = require("../services/postService");
 
@@ -21,7 +22,7 @@ router.get("/check",(req,res)=>{
     try {
         const decode = jwt.verify(token,process.env.JWT_SECRET);
 
-        return res.status(201).json({
+        return res.status(200).json({
             success: true,
             authenticated: true
         })
@@ -48,11 +49,11 @@ router.get("/auth/google/callback",
             secure: process.env.NODE_ENV === "production",
             maxAge: 3600000
         });
-        res.redirect("http://localhost:5173/profile");
+        res.redirect(`${process.env.CLIENT_URL}/profile`);
     }
 );
 
-router.post("/register",async (req,res)=>{
+router.post("/register", limiter , async (req,res)=>{
     try{
         let {username ,name , age , email , password} = req.body;
         const token = await authService.register({username ,name , age , email , password});
@@ -72,7 +73,7 @@ router.post("/register",async (req,res)=>{
     }
 });
 
-router.post("/login",async (req,res)=>{
+router.post("/login", limiter ,async (req,res)=>{
     try{
         const token = await authService.login({email:req.body.email,password:req.body.password});
         if (token){

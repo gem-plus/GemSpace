@@ -28,10 +28,10 @@ async function register({username ,name , age , email , password}){
 async function login({email , password}){
         try{
                 let user = await userModel.findOne({email});
-                if (!user) return null;
+                if (!user) throw new Error("something went wrong");
             
                 const match = await bcrypt.compare(password,user.password);
-                if (!match) return null;
+                if (!match) throw new Error("something went wrong");
                 
                 let token = jwt.sign({
                         email:email,

@@ -11,6 +11,9 @@ const postModel = require("../models/post");
             let user = await userModel.findOne({email});
             if(!user) throw new Error("User not found");
             
+            const contentlen = content.length;
+            if(contentlen>90) throw new Error("context window crossed")
+
             let post = await postModel.create({
                 user: user._id,
                 content
@@ -67,10 +70,26 @@ const postModel = require("../models/post");
         }
     }
 
+    async function postDelete(postID,userID) {
+       
+           const user = await userModel.findOne({_id:userID});
+            if (!user) throw new Error("user not found");
+
+            const userPosts = user.posts;
+
+            if (!userPosts.includes(postID)) throw new Error("authorization failed")
+
+            await postModel.findOneAndDelete({_id:postID})
+            
+            user.posts.pull(postID);
+            await user.save();
+    }
+
 module.exports = {
     home,
     newPost,
     edit,
     update,
-    like
+    like,
+    postDelete
 };

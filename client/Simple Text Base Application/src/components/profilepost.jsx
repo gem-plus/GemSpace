@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime"
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +11,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-function Post({ username, content, postID, onLike, likes, userID }) {
+dayjs.extend(relativeTime);
+
+function Post({ username, content , postID , likes, userID , date , onLike , onDelete }) {
   const navigate = useNavigate();
   const [likebtn, setlikebtn] = useState(
     likes.includes(userID) ? "unlike" : "like",
@@ -26,11 +30,31 @@ function Post({ username, content, postID, onLike, likes, userID }) {
     navigate("/edit", { state: { postID } });
   }
 
+  async function handleDelete() {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/delete/${postID}`,
+        {
+          method: "post",
+          credentials: "include",
+        },
+      );
+      const data = await res.json();
+      if (!data.success) throw new Error("Deletion failed");
+
+      await onDelete(postID);
+
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   return (
     <>
       <Card size="sm" className="w-80 h-48 flex flex-col">
-        <CardHeader>
+        <CardHeader >
           <CardTitle>@{username}</CardTitle>
+          <small>{dayjs(date).fromNow()}</small>
         </CardHeader>
         <CardContent className="flex-1">
           <p className="max-h-24 overflow-y-auto wrap-break-word">{content}</p>
@@ -47,9 +71,14 @@ function Post({ username, content, postID, onLike, likes, userID }) {
                 {likebtn}
               </Button>
             </div>
-            <Button variant="outline" onClick={handleEdit} size="sm">
+            <div>
+            <Button variant="outline" onClick={handleEdit} size="sm" className="m-1">
               Edit
             </Button>
+            <Button variant="outline" onClick={handleDelete} size="sm" className="m-1 text-red-600">
+              Delete
+            </Button>
+            </div>
           </div>
         </CardFooter>
       </Card>

@@ -74,6 +74,10 @@ function Profile() {
     }
   }
 
+  function handleDelete(postID){
+    setPosts((prev) => prev.filter((p) => p._id !== postID))
+  }
+
   return (
     <>
       <SidebarProvider>
@@ -88,11 +92,12 @@ function Profile() {
               <div className="grid w-1/4 gap-2">
                 <form onSubmit={handleSubmit}>
                   <Textarea
-                    className="w-1/4"
+
                     id="textarea-message"
                     name="content"
                     value={form.content}
                     onChange={(e) => handleChange(e)}
+                    maxLength={90}
                     placeholder="Type your message here."
                   />
                   <Button className="mt-2" type="submit">
@@ -105,15 +110,17 @@ function Profile() {
             <div className="posts mt-15">
               <h3>Your post's</h3>
               <div className="flex flex-wrap gap-5">
-                {[...posts].reverse().map((post) => (
+                {posts.reverse().map((post) => (
                   <Post
                     onLike={handleLike}
+                    onDelete={handleDelete}
                     userID={userID}
                     likes={post.likes}
                     key={post._id}
                     postID={post._id}
                     username={username}
                     content={post.content}
+                    date={post.date}
                   />
                 ))}
               </div>

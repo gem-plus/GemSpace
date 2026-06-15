@@ -73,10 +73,10 @@ function Auth() {
       const data = await res.json();
       if (data.success) {
         navigate("/profile");
+      }else{
+        if (data.message === "duplicate user") setError("Email already exist");
+        else setError("Something went wrong");
       }
-
-      if (data.message === "duplicate user") setError("Email already exist");
-      else setError("Something went wrong");
 
       setForm({ username: "", name: "", age: "", email: "", password: "" });
     } catch (err) {

@@ -56,6 +56,7 @@ function Home() {
               likes={post.likes}
               username={post.user.username}
               content={post.content}
+              date={post.date}
             />
           ))}
         </main>
