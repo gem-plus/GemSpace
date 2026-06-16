@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/sidebar";
 
 function Profile() {
@@ -32,7 +32,6 @@ function Profile() {
     checkAuth();
   }, [navigate]);
 
-
   function handleChange(e) {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -42,6 +41,7 @@ function Profile() {
     e.preventDefault();
 
     try {
+      if (form.content === "") throw new Error("Post cannot be empty");
       const res = await fetch(`${import.meta.env.VITE_API_URL}/post`, {
         method: "post",
         headers: { "Content-Type": "application/json" },
@@ -50,7 +50,7 @@ function Profile() {
       });
       const data = await res.json();
       if (data.success) {
-        setPosts((prev) => [data.post, ...prev]);
+        setPosts((prev) => [...prev, data.post]);
         setForm({ content: "" });
       }
     } catch (err) {
@@ -74,14 +74,14 @@ function Profile() {
     }
   }
 
-  function handleDelete(postID){
-    setPosts((prev) => prev.filter((p) => p._id !== postID))
+  function handleDelete(postID) {
+    setPosts((prev) => prev.filter((p) => p._id !== postID));
   }
 
   return (
     <>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar loggedIn={userID} />
         <main>
           <div className="m-10 p-0">
             <h3 className="text-4xl">{greet}</h3>
@@ -89,10 +89,10 @@ function Profile() {
             <Field className="mt-10">
               <FieldLabel>New Post</FieldLabel>
               <FieldDescription>Enter your message below.</FieldDescription>
-              <div className="grid w-1/4 gap-2">
+              <div className="grid gap-2">
                 <form onSubmit={handleSubmit}>
                   <Textarea
-
+                    className="w-1/4"
                     id="textarea-message"
                     name="content"
                     value={form.content}
@@ -100,7 +100,11 @@ function Profile() {
                     maxLength={90}
                     placeholder="Type your message here."
                   />
-                  <Button className="mt-2" type="submit">
+                  <Button
+                    className="mt-2"
+                    type="submit"
+                    disabled={form.content.trim() === ""}
+                  >
                     Create post
                   </Button>
                 </form>
@@ -110,7 +114,7 @@ function Profile() {
             <div className="posts mt-15">
               <h3>Your post's</h3>
               <div className="flex flex-wrap gap-5">
-                {posts.reverse().map((post) => (
+                {[...posts].reverse().map((post) => (
                   <Post
                     onLike={handleLike}
                     onDelete={handleDelete}

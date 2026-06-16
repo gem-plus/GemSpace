@@ -1,7 +1,7 @@
 import HomePost from "../components/homepost";
 import { useEffect, useState } from "react";
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import  AppSidebar  from "@/components/sidebar"
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/sidebar";
 
 function Home() {
   const [post, setpost] = useState([]);
@@ -31,10 +31,13 @@ function Home() {
 
   async function handleLike(postID) {
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/like/${postID}`, {
-        method: "post",
-        credentials: "include",
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/like/${postID}`,
+        {
+          method: "post",
+          credentials: "include",
+        },
+      );
       const data = await res.json();
       return data;
     } catch (err) {
@@ -45,7 +48,7 @@ function Home() {
   return (
     <>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar loggedIn={currentUser} />
         <main>
           {[...post].reverse().map((post) => (
             <HomePost
@@ -61,7 +64,6 @@ function Home() {
           ))}
         </main>
       </SidebarProvider>
-
     </>
   );
 }

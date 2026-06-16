@@ -18,7 +18,7 @@ import {
 import logo from "../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 
-function AppSidebar() {
+function AppSidebar({ loggedIn }) {
   const navigate = useNavigate();
 
   async function handleLogout() {
@@ -30,9 +30,15 @@ function AppSidebar() {
       if (!res.ok) throw new Error("logout failed"); // when server rejects req
       navigate("/auth");
     } catch (err) {
-      if (err.message === "logout failed") navigate("/profile"); //if fetch fails 
+      if (err.message === "logout failed") navigate("/profile"); //if fetch fails
     }
   }
+
+  const logoutBtn = (
+    <DropdownMenuItem onClick={handleLogout} className=" pl-6 ">
+      Logout
+    </DropdownMenuItem>
+  );
 
   return (
     <Sidebar>
@@ -81,11 +87,14 @@ function AppSidebar() {
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent side="top" align="start" className="w-56">
-                <DropdownMenuItem onClick={handleLogout} className=" pl-6 ">
-                  Logout
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={()=>{window.open("https://github.com/gem-plus","_blank")}} className="mt-2 pl-6">
-                    Contact Us
+                {loggedIn ? logoutBtn : null}
+                <DropdownMenuItem
+                  onClick={() => {
+                    window.open("https://github.com/gem-plus", "_blank");
+                  }}
+                  className="mt-2 pl-6"
+                >
+                  Contact Us
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

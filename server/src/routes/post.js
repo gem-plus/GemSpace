@@ -62,9 +62,9 @@ router.post("/like/:id",isLoggedIn,async (req,res)=>{
 
 })    
 
-router.post("/delete/:id",isLoggedIn,async(req,res)=>{
+router.post("/delete/:postid",isLoggedIn,async(req,res)=>{
     try {
-        await postService.postDelete(req.params.id,req.user.userid);
+        await postService.postDelete(req.params.postid,req.user.userid);
         return res.status(200).json({success:true})
     } catch (error) {
         return res.status(500).json({success:false,error:error})

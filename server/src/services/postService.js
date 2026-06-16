@@ -77,7 +77,7 @@ const postModel = require("../models/post");
 
             const userPosts = user.posts;
 
-            if (!userPosts.includes(postID)) throw new Error("authorization failed")
+             if (!userPosts.map(id => id.toString()).includes(postID)) throw new Error("authorization failed");
 
             await postModel.findOneAndDelete({_id:postID})
             

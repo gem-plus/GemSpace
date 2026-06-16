@@ -1,8 +1,11 @@
-import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import AppSidebar from "@/components/sidebar";
 
 function Edit() {
   const [content, setContent] = useState("");
@@ -34,6 +37,7 @@ function Edit() {
     e.preventDefault();
 
     try {
+      if (content === "") throw new Error("Post cannot be empty");
       const res = await fetch(
         `${import.meta.env.VITE_API_URL}/update/${state.postID}`,
         {
@@ -53,22 +57,34 @@ function Edit() {
   }
 
   return (
-    <>
-    <div className="m-10">
-      <h5 className="text-2xl ">Edit your post</h5>
-      <form onSubmit={handleSubmit} className="mt-3">
-        <Textarea 
-          className="w-1/4 "
-          name="content"
-          value={content}
-          onChange={handleChange}
-        />
-        <Button className="mt-2" type="submit">
-          Edit post
-        </Button>
-      </form>
-    </div>
-    </>
+    <SidebarProvider>
+      <AppSidebar />
+      <main h-screen w-full>
+        <div className="m-10 p-0">
+          <Field className="mt-10">
+            <FieldLabel className="text-3xl" htmlFor="textarea-message">
+              Edit
+            </FieldLabel>
+            <FieldDescription>Enter your new message below.</FieldDescription>
+            <form onSubmit={handleSubmit}>
+              <Textarea
+                // className="w-1/4"
+                name="content"
+                value={content}
+                onChange={handleChange}
+              />
+              <Button
+                className="mt-2"
+                type="submit"
+                disabled={content.trim() === ""}
+              >
+                Save
+              </Button>
+            </form>
+          </Field>
+        </div>
+      </main>
+    </SidebarProvider>
   );
 }
 

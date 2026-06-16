@@ -5,7 +5,6 @@ const passport = require("passport");
 const { isLoggedIn } = require("../middleware/auth");
 const { limiter } = require("../middleware/rateLimiter");
 const authService = require("../services/authService");
-const postService = require("../services/postService");
 
 router.get("/me",isLoggedIn,(req,res)=>{
     return res.json({
@@ -13,24 +12,6 @@ router.get("/me",isLoggedIn,(req,res)=>{
         id:req.user.userid
     })
 });
-
-router.get("/check",(req,res)=>{
-    const token = req.cookies.token;
-
-    if (!token) return res.status(401).json({ success: false, message: "Invalid credentials" });
-
-    try {
-        const decode = jwt.verify(token,process.env.JWT_SECRET);
-
-        return res.status(200).json({
-            success: true,
-            authenticated: true
-        })
-        
-    } catch (err) {
-        return res.status(401).json({ success: false, message: "Invalid credentials" });    
-    }
-})
 
 router.get("/auth/google", 
     passport.authenticate("google", { scope: ["profile", "email"] })

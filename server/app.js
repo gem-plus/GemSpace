@@ -31,7 +31,6 @@ app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUniniti
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(mongoSanitize());
-app.use(limiter);
 
 app.use("/",authRoute);
 app.use("/",postRoute);

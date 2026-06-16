@@ -73,19 +73,18 @@ function Auth() {
       const data = await res.json();
       if (data.success) {
         navigate("/profile");
-      }else{
+      } else {
+        setForm({ username: "", name: "", age: "", email: "", password: "" });
         if (data.message === "duplicate user") setError("Email already exist");
         else setError("Something went wrong");
       }
-
-      setForm({ username: "", name: "", age: "", email: "", password: "" });
     } catch (err) {
       console.error(err);
     }
   }
 
   const login = (
-    <div>
+    <div className="flex h-screen w-full justify-center items-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Login to your account</CardTitle>
@@ -140,10 +139,13 @@ function Auth() {
           <Button type="submit" form="form-login" className="w-full">
             Login
           </Button>
-          <a  href={`${import.meta.env.VITE_API_URL}/auth/google`}   className="w-full">
-          <Button variant="outline" className="w-full">
-            Login with Google
-          </Button>
+          <a
+            href={`${import.meta.env.VITE_API_URL}/auth/google`}
+            className="w-full"
+          >
+            <Button variant="outline" className="w-full">
+              Login with Google
+            </Button>
           </a>
         </CardFooter>
       </Card>
@@ -151,7 +153,7 @@ function Auth() {
   );
 
   const register = (
-    <div>
+    <div className="flex h-screen w-full justify-center items-center">
       <Card className="w-full max-w-sm">
         <CardHeader>
           <CardTitle>Create account</CardTitle>
@@ -243,10 +245,13 @@ function Auth() {
           <Button type="submit" form="form-register" className="w-full">
             Create account
           </Button>
-          <a href={`${import.meta.env.VITE_API_URL}/auth/google`}  className="w-full">
-          <Button variant="outline" className="w-full">
-            Signup with Google
-          </Button>
+          <a
+            href={`${import.meta.env.VITE_API_URL}/auth/google`}
+            className="w-full"
+          >
+            <Button variant="outline" className="w-full">
+              Signup with Google
+            </Button>
           </a>
         </CardFooter>
       </Card>
