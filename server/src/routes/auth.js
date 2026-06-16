@@ -28,6 +28,7 @@ router.get("/auth/google/callback",
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
+            sameSite: "none",
             maxAge: 3600000
         });
         res.redirect(`${process.env.CLIENT_URL}/profile`);
@@ -42,6 +43,7 @@ router.post("/register", limiter , async (req,res)=>{
             res.cookie("token",token,{
                 httpOnly:true,
                 secure:process.env.NODE_ENV==="production",
+                sameSite: "none",
                 maxAge: 3600000
             });
             return res.status(201).json({ success: true });
@@ -62,7 +64,7 @@ router.post("/login", limiter ,async (req,res)=>{
                 httpOnly:true,
                 secure:process.env.NODE_ENV==="production",
                 maxAge:3600000,
-                sameSite: "lax"
+                sameSite: "none"
             });
             return res.json({success:true})
         }
