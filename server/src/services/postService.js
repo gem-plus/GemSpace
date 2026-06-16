@@ -71,18 +71,22 @@ const postModel = require("../models/post");
     }
 
     async function postDelete(postID,userID) {
-       
-           const user = await userModel.findOne({_id:userID});
-            if (!user) throw new Error("user not found");
-
-            const userPosts = user.posts;
-
-             if (!userPosts.map(id => id.toString()).includes(postID)) throw new Error("authorization failed");
-
-            await postModel.findOneAndDelete({_id:postID})
-            
-            user.posts.pull(postID);
-            await user.save();
+        try {
+            const user = await userModel.findOne({_id:userID});
+             if (!user) throw new Error("user not found");
+ 
+             const userPosts = user.posts;
+ 
+              if (!userPosts.map(id => id.toString()).includes(postID)) throw new Error("authorization failed");
+ 
+             await postModel.findOneAndDelete({_id:postID}) 
+             
+             user.posts.pull(postID);
+             await user.save();     
+        } catch (error) {
+            console.error("error in postDelete postService :",error)
+            throw error;
+        }
     }
 
 module.exports = {

@@ -22,7 +22,7 @@ function Profile() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
         credentials: "include",
       });
-      if (res.status === 401) navigate("/auth");
+      if (res.status === 401)  return navigate("/auth");
       const data = await res.json();
       setPosts(data.posts);
       setUserID(data.userID);
