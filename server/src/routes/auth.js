@@ -28,7 +28,8 @@ router.get("/auth/google/callback",
         res.cookie("token", token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: "none",
+            sameSite: "lax",
+            domain: ".gemplus.dpdns.org",
             maxAge: 3600000
         });
         res.redirect(`${process.env.CLIENT_URL}/profile`);
@@ -43,7 +44,8 @@ router.post("/register", limiter , async (req,res)=>{
             res.cookie("token",token,{
                 httpOnly:true,
                 secure:process.env.NODE_ENV==="production",
-                sameSite: "none",
+                sameSite: "lax",
+                domain: ".gemplus.dpdns.org",
                 maxAge: 3600000
             });
             return res.status(201).json({ success: true });
@@ -64,7 +66,8 @@ router.post("/login", limiter ,async (req,res)=>{
                 httpOnly:true,
                 secure:process.env.NODE_ENV==="production",
                 maxAge:3600000,
-                sameSite: "none"
+                sameSite: "lax",
+                domain: ".gemplus.dpdns.org"
             });
             return res.json({success:true})
         }
@@ -80,6 +83,8 @@ router.post("/login", limiter ,async (req,res)=>{
 router.get("/logout",(req,res)=>{
     res.clearCookie("token",{
         httpOnly:true,
+        sameSite: "lax",
+        domain: ".gemplus.dpdns.org",
         secure:process.env.NODE_ENV==="production"
     });
     return res.json({ success: true });
