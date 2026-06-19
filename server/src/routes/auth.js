@@ -80,7 +80,8 @@ router.post("/login", limiter ,async (req,res)=>{
 router.get("/logout",(req,res)=>{
     res.clearCookie("token",{
         httpOnly:true,
-        secure:process.env.NODE_ENV==="production"
+        secure:process.env.NODE_ENV==="production",
+         sameSite: "none"
     });
     return res.json({ success: true });
 });

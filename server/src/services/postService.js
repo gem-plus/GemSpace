@@ -1,10 +1,17 @@
 const userModel = require("../models/user");
 const postModel = require("../models/post");
 
-    async function home() {
-        const posts = await postModel.find().populate("user");
-        return posts
+
+    async function home(page = 1, limit = 6) {
+    const skip = (page - 1) * limit;
+    const posts = await postModel.find()
+        .populate("user", "username")
+        .sort({ date: -1 })
+        .skip(skip)
+        .limit(limit);
+    return posts;
     }
+    
 
     async function newPost({email,content}){
         try{

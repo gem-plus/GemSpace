@@ -6,8 +6,9 @@ const postService = require("../services/postService");
 
 router.get("/", async (req,res)=>{
     try {
-        const post = await postService.home();
-        return res.json({success:true, post:post});
+    const page = parseInt(req.query.page) || 1;
+    const posts = await postService.home(page);
+    return res.json({ success: true, post: posts });
         
     } catch (err) {
         console.error(err);
