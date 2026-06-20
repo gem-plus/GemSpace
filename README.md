@@ -2,7 +2,7 @@
 
 A full-stack social posting app — register or sign in (including Google OAuth), write text posts, like other users' posts, and edit your own. Built as a MERN-style app with a React/Vite client and an Express/MongoDB API.
 
-**Live demo:** [simple-text-base-application.vercel.app](https://simple-text-base-application.vercel.app)
+**Live demo:** [gemplus.dpdns.org](https://gemplus.dpdns.org/)
 
 ## Features
 
