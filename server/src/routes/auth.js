@@ -2,9 +2,13 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const passport = require("passport");
+const multer = require("multer");
+
 const { isLoggedIn } = require("../middleware/auth");
 const { limiter } = require("../middleware/rateLimiter");
 const authService = require("../services/authService");
+
+const upload = multer({ storage: multer.memoryStorage(),});
 
 router.get("/me",isLoggedIn,(req,res)=>{
     return res.json({
@@ -29,8 +33,8 @@ router.get("/auth/google/callback",
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
-            domain: ".gemplus.dpdns.org",
-            maxAge: 3600000
+            maxAge: 3600000,
+            ...(process.env.NODE_ENV === "production" && { domain: ".gemplus.dpdns.org" })        
         });
         res.redirect(`${process.env.CLIENT_URL}/profile`);
     }
@@ -45,8 +49,8 @@ router.post("/register", limiter , async (req,res)=>{
                 httpOnly:true,
                 secure:process.env.NODE_ENV==="production",
                 sameSite: "lax",
-                domain: ".gemplus.dpdns.org",
-                maxAge: 3600000
+                maxAge: 3600000,
+                ...(process.env.NODE_ENV === "production" && { domain: ".gemplus.dpdns.org" })            
             });
             return res.status(201).json({ success: true });
         }
@@ -67,7 +71,7 @@ router.post("/login", limiter ,async (req,res)=>{
                 secure:process.env.NODE_ENV==="production",
                 maxAge:3600000,
                 sameSite: "lax",
-                domain: ".gemplus.dpdns.org"
+                ...(process.env.NODE_ENV === "production" && { domain: ".gemplus.dpdns.org" })
             });
             return res.json({success:true})
         }
@@ -84,17 +88,29 @@ router.get("/logout",(req,res)=>{
     res.clearCookie("token",{
         httpOnly:true,
         sameSite: "lax",
-        domain: ".gemplus.dpdns.org",
-        secure:process.env.NODE_ENV==="production"
+        secure:process.env.NODE_ENV==="production",
+        ...(process.env.NODE_ENV === "production" && { domain: ".gemplus.dpdns.org" })      
     });
     return res.json({ success: true });
 });
+
+router.post("/profilepic",upload.single("img"),isLoggedIn,limiter,async(req,res)=>{
+    try {
+        const result = await authService.upload(req.file,req.user.userid);
+        return  res.json({success: true,profilePic: result.secure_url});
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({
+        success: false
+    })
+    }
+})
 
 router.get("/profile",isLoggedIn,async (req,res)=>{
     try{
         const user = await authService.populateProfile(req.user.email);
         if(!user) return res.status(401).json({ success: false, message: "Invalid credentials" });
-        return res.json({success:true,name:user.name, username:user.username ,posts: user.posts, userID:req.user.userid})
+        return res.json({success:true,name:user.user.name, username:user.user.username ,profilePic:user.imageUrl ,posts: user.user.posts, userID:req.user.userid})
     }catch(error){
         console.error("route error in /profile:",error);
         return res.status(401).json({ success: false, message: "Invalid credentials" });

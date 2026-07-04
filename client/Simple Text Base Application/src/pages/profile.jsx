@@ -11,6 +11,7 @@ function Profile() {
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
   const [name, setName] = useState("");
+  const [profilePic, setProfilePic] = useState("");
   const [username, setUsername] = useState("");
   const [form, setForm] = useState({ content: "" });
   const [userID, setUserID] = useState("");
@@ -22,11 +23,13 @@ function Profile() {
       const res = await fetch(`${import.meta.env.VITE_API_URL}/profile`, {
         credentials: "include",
       });
-      if (res.status === 401)  return navigate("/auth");
+      if (res.status === 401) return navigate("/auth");
       const data = await res.json();
       setPosts(data.posts);
       setUserID(data.userID);
       setName(data.name);
+      setProfilePic(data.profilePic);
+      console.log(data);
       setUsername(data.username);
     }
     checkAuth();
@@ -85,8 +88,31 @@ function Profile() {
         <main>
           <div className="m-10 p-0">
             <h3 className="text-4xl">{greet}</h3>
-
-            <Field className="mt-10">
+            <div className="mt-5 mb-5 grid grid-cols-3 gap-4 w-1/3">
+              <div className="profilePic">
+                <a onClick={() => navigate("/profilepic")}>
+                  {profilePic ? (
+                    <img
+                      src={profilePic}
+                      alt="Profile Pic"
+                      className=" rounded"
+                    />
+                  ) : (
+                    <span>Profile Picture</span>
+                  )}
+                </a>
+              </div>
+              <div className="follower">
+                <h3>follower</h3>
+                <span>3</span>
+              </div>
+              <div className="following">
+                <h3>following</h3>
+                <span>4</span>
+              </div>
+            </div>
+            <hr />
+            <Field className="mt-5">
               <FieldLabel>New Post</FieldLabel>
               <FieldDescription>Enter your message below.</FieldDescription>
               <div className="grid gap-2">

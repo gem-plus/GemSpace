@@ -11,7 +11,8 @@ const mongoSanitize = require('express-mongo-sanitize');
 
 const authRoute = require("./src/routes/auth");
 const postRoute = require("./src/routes/post");
-const connectDB = require("./src/config/db");
+const cloudinaryDB = require("./src/config/cloudinary.js");
+const connectDB = require("./src/config/mongodb");
 const userModel = require("./src/models/user")
 const cookieParser =require("cookie-parser")
 const PORT = process.env.PORT ;
@@ -19,8 +20,11 @@ const PORT = process.env.PORT ;
 const app = express();
 
 connectDB();
-app.use(helmet());
+app.use(helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+}));
 app.use(cors({
+
     origin: [process.env.CLIENT_URL,process.env.LOCAL_URL],
     credentials: true
 }));
@@ -34,6 +38,7 @@ app.use(mongoSanitize());
 
 app.use("/",authRoute);
 app.use("/",postRoute);
+app.use("/uploads", express.static("uploads"));//to be removed
 
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,

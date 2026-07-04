@@ -1,66 +1,123 @@
 const userModel = require("../models/user");
+const cloudinary = require("../config/cloudinary");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const streamifier = require("streamifier");
 const jwtSecret = process.env.JWT_SECRET;
 
 async function register({username ,name , age , email , password}){
-                let user = await userModel.findOne({email});
-                if (user)  throw new Error("duplicate");
-                
-                const salt = await bcrypt.genSalt(10);
-                const hash = await bcrypt.hash(password, salt);
-                
-                let newUser = await userModel.create({
-                        name,
-                        username,
-                        age,
-                        email,
-                        password : hash
-                })
-                let token = jwt.sign({
-                        email:email,
-                        userid:newUser._id
-                }, jwtSecret,{expiresIn:"1h"});
-        
-                return token;
+		let user = await userModel.findOne({email});
+		if (user)  throw new Error("duplicate");
+
+		const salt = await bcrypt.genSalt(10);
+		const hash = await bcrypt.hash(password, salt);
+
+		let newUser = await userModel.create({
+			name,
+			username,
+			age,
+			email,
+			password : hash
+		})
+		let token = jwt.sign({
+			email:email,
+			userid:newUser._id
+		}, jwtSecret,{expiresIn:"1h"});
+
+		return token;
 }
 
 async function login({email , password}){
-        try{
-                let user = await userModel.findOne({email});
-                if (!user) throw new Error("something went wrong");
-            
-                const match = await bcrypt.compare(password,user.password);
-                if (!match) throw new Error("something went wrong");
-                
-                let token = jwt.sign({
-                        email:email,
-                        userid:user._id
-                }, jwtSecret,{expiresIn:"1h"});
+	try{
+		let user = await userModel.findOne({email});
+		if (!user) throw new Error("something went wrong");
 
-                return token;
+		const match = await bcrypt.compare(password,user.password);
+		if (!match) throw new Error("something went wrong");
 
-        }catch(error){
-                console.error("error in login:",error);
-                return null;
-        }       
-    
+		let token = jwt.sign({
+			email:email,
+			userid:user._id
+		}, jwtSecret,{expiresIn:"1h"});
+
+		return token;
+
+	}catch(error){
+		console.error("error in login:",error);
+		return null;
+	}
+
+}
+
+async function upload(file,userID){
+	try {
+		if(!file) throw new Error("File not found");
+
+		const streamUpload = (buffer) => {
+			return new Promise((resolve, reject) => {
+				const stream = cloudinary.uploader.upload_stream(
+					{
+						folder: "profile-pics",
+						 transformation: [
+							 {
+								 width: 300,
+								 height: 300,
+								 crop: "fill",
+								 gravity: "face",
+								 quality: "auto",
+								 fetch_format: "auto",
+								},
+							],
+					},
+					(error, result) => {
+						if (error) reject(error);
+						else resolve(result);
+					}
+				);
+
+				streamifier.createReadStream(buffer).pipe(stream);
+			});
+		};
+		console.log("File size:", file.size, "bytes");
+		console.time("cloudinary");
+		const result = await streamUpload(file.buffer);
+		console.timeEnd("cloudinary")
+
+		console.time("mongo")
+		await userModel.findByIdAndUpdate(userID, {
+		profilePic: result.public_id,
+		});
+		console.timeEnd("mongo")
+
+		return result;
+
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 async function populateProfile(email){
-        try{
-                let user = await userModel.findOne({email: email}).populate("posts");
-                return user;
-        }
-        catch(error){
-                console.error("error in getting post",error);
-                return null;
-        }
-    
+	try{
+		let user = await userModel.findOne({email: email}).populate("posts");
+		const imageUrl = cloudinary.url(user.profilePic, {
+			width: 300,
+			height: 300,
+			crop: "fill",
+			gravity: "face",
+		});
+
+		return {user,imageUrl};
+	}
+	catch(error){
+		console.error("error in getting post",error);
+		return null;
+	}
+
 }
 
 module.exports = {
     register,
     login,
+    upload,
     populateProfile
 }

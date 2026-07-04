@@ -3,6 +3,7 @@ import Profile from "./pages/profile";
 import Edit from "./pages/edit";
 import Home from "./pages/home";
 import Auth from "./pages/auth";
+import ProfilePic from "./pages/profilepic";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/auth" element={<Auth/>}/>
       <Route path="/profile" element={<Profile />} />
+      <Route path="/profilepic" element={<ProfilePic />} />
       <Route path="/edit" element={<Edit />} />
     </Routes>
   );
