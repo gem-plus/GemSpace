@@ -18,7 +18,6 @@ function Home() {
 
       const res = await fetch(`${import.meta.env.VITE_API_URL}/?page=${page}`);
       const data = await res.json();
-  
       if (data.post.length === 0) {
         setHasMore(false);
         return new Error("no more posts");
@@ -101,6 +100,7 @@ function Home() {
               postID={post._id}
               likes={post.likes}
               username={post.user.username}
+              avatarURL={post.avatarURL}
               content={post.content}
               date={post.date}
             />

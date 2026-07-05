@@ -8,7 +8,7 @@ router.get("/", async (req,res)=>{
     try {
     const page = parseInt(req.query.page) || 1;
     const posts = await postService.home(page);
-    return res.json({ success: true, post: posts });
+    return res.json({ success: true, post: posts.posts,});
         
     } catch (err) {
         console.error(err);

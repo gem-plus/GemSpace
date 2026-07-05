@@ -1,106 +1,117 @@
 const userModel = require("../models/user");
 const postModel = require("../models/post");
+const cloudinary = require("../config/cloudinary");
 
+async function home(page = 1, limit = 6) {
+  const skip = (page - 1) * limit;
+  const posts = await postModel
+    .find()
+    .populate("user", "username profilePic")
+    .sort({ date: -1 })
+    .skip(skip)
+    .limit(limit);
 
-    async function home(page = 1, limit = 6) {
-    const skip = (page - 1) * limit;
-    const posts = await postModel.find()
-        .populate("user", "username")
-        .sort({ date: -1 })
-        .skip(skip)
-        .limit(limit);
-    return posts;
+  const postsWithAvatar = posts.map((post) => ({
+    ...post.toObject(),
+    avatarURL: cloudinary.url(post.user.profilePic, {
+      width: 30,
+      height: 30,
+      crop: "fill",
+      gravity: "face",
+    }),
+  }));
+
+  return { posts: postsWithAvatar };
+}
+
+async function newPost({ email, content }) {
+  try {
+    let user = await userModel.findOne({ email });
+    if (!user) throw new Error("User not found");
+
+    const contentlen = content.length;
+    if (contentlen > 90) throw new Error("context window crossed");
+
+    let post = await postModel.create({
+      user: user._id,
+      content,
+    });
+
+    user.posts.push(post._id);
+    await user.save();
+    return post;
+  } catch (error) {
+    console.error("error in newpost service:", error);
+    throw error;
+  }
+}
+
+async function edit({ id }) {
+  try {
+    let post = await postModel.findOne({ _id: id });
+    return post;
+  } catch (error) {
+    console.error("error in edit postService:", error);
+    return null;
+  }
+}
+
+async function update({ id, content }) {
+  try {
+    await postModel.findOneAndUpdate({ _id: id }, { content: content });
+  } catch (error) {
+    console.error("error in update postService:", error);
+    throw error;
+  }
+}
+
+async function like({ postid, userid }) {
+  try {
+    let post = await postModel.findOne({ _id: postid });
+    if (!post) throw new Error("post not found");
+
+    let isliked = post.likes.includes(userid);
+
+    if (isliked) {
+      post.likes.pull(userid);
+    } else {
+      post.likes.push(userid);
     }
-    
 
-    async function newPost({email,content}){
-        try{
-            let user = await userModel.findOne({email});
-            if(!user) throw new Error("User not found");
-            
-            const contentlen = content.length;
-            if(contentlen>90) throw new Error("context window crossed")
+    await post.save();
 
-            let post = await postModel.create({
-                user: user._id,
-                content
-            });
-            
-            user.posts.push(post._id);
-            await user.save();
-            return post;
-        }catch(error){
-            console.error("error in newpost service:",error);
-            throw error;
-    }
-    }
+    return { isliked: !isliked, likeCount: post.likes.length };
+  } catch (error) {
+    console.error("error in like postService:", error);
+    throw error;
+  }
+}
 
-    async function edit({id}){
-        try{
-            let post = await postModel.findOne({_id:id});
-            return post;
-        }catch(error){
-            console.error("error in edit postService:",error);
-            return null;
-        }
-  
-    }
+async function postDelete(postID, userID) {
+  try {
+    const user = await userModel.findOne({ _id: userID });
+    if (!user) throw new Error("user not found");
 
-    async function update({id,content}){
-        try{
-            await postModel.findOneAndUpdate({_id:id},{content:content});
-        }catch(error){
-            console.error("error in update postService:",error);
-            throw error;
-        }
-    }
+    const userPosts = user.posts;
 
-    async function like({postid,userid}){
-        try {
-            let post = await postModel.findOne({_id:postid});
-            if (!post) throw new Error("post not found");
+    if (!userPosts.map((id) => id.toString()).includes(postID))
+      throw new Error("authorization failed");
 
-            let isliked = post.likes.includes(userid);
+    await postModel.findOneAndDelete({ _id: postID });
 
-            if (isliked){
-                post.likes.pull(userid);
-            }else{
-                post.likes.push(userid);
-            }
-
-            await post.save();
-
-            return {isliked:!isliked,likeCount:post.likes.length};
-        }catch(error){
-            console.error("error in like postService:",error);
-            throw error;
-        }
-    }
-
-    async function postDelete(postID,userID) {
-        try {
-            const user = await userModel.findOne({_id:userID});
-             if (!user) throw new Error("user not found");
- 
-             const userPosts = user.posts;
- 
-              if (!userPosts.map(id => id.toString()).includes(postID)) throw new Error("authorization failed");
- 
-             await postModel.findOneAndDelete({_id:postID}) 
-             
-             user.posts.pull(postID);
-             await user.save();     
-        } catch (error) {
-            console.error("error in postDelete postService :",error)
-            throw error;
-        }
-    }
+    user.posts.pull(postID);
+    await user.save();
+  } catch (error) {
+    console.error("error in postDelete postService :", error);
+    throw error;
+  }
+}
 
 module.exports = {
-    home,
-    newPost,
-    edit,
-    update,
-    like,
-    postDelete
+  home,
+  newPost,
+  edit,
+  update,
+  like,
+  postDelete,
 };

@@ -88,14 +88,14 @@ function Profile() {
         <main>
           <div className="m-10 p-0">
             <h3 className="text-4xl">{greet}</h3>
-            <div className="mt-5 mb-5 grid grid-cols-3 gap-4 w-1/3">
+            <div className="mt-5 mb-5 grid grid-cols-3 gap-5 w-1/3">
               <div className="profilePic">
                 <a onClick={() => navigate("/profilepic")}>
                   {profilePic ? (
                     <img
                       src={profilePic}
                       alt="Profile Pic"
-                      className=" rounded"
+                      className="w-[150px] h-[150px] rounded-full object-coverrounded"
                     />
                   ) : (
                     <span>Profile Picture</span>

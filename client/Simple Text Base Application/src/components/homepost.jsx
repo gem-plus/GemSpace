@@ -12,7 +12,16 @@ import {
 
 dayjs.extend(relativeTime);
 
-function HomePost({ username, content, userID, postID, likes, date, onLike }) {
+function HomePost({
+  username,
+  avatarURL,
+  content,
+  userID,
+  postID,
+  likes,
+  date,
+  onLike,
+}) {
   const [likebtn, setlikebtn] = useState(
     userID && likes.includes(userID) ? "unlike" : "like",
   );
@@ -35,8 +44,13 @@ function HomePost({ username, content, userID, postID, likes, date, onLike }) {
       <div className="ml-10 mt-5">
         <Card size="sm" className="w-250 h-48 ">
           <CardHeader>
+            <div className="flex items-center gap-4">
+            <img src={avatarURL} alt="Avatar Pic" className=" w-10 h-10  rounded-full object-coverrounded" />
+            <div >
             <CardTitle>@{username}</CardTitle>
-            <small className="ml-3">{dayjs(date).fromNow()}</small>
+            <small>{dayjs(date).fromNow()}</small>
+            </div>
+            </div>
           </CardHeader>
           <CardContent>
             <p className="max-h-64 overflow-y-auto wrap-break-word">
