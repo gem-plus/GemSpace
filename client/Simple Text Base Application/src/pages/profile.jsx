@@ -87,7 +87,7 @@ function Profile() {
     <>
       <SidebarProvider>
         <AppSidebar loggedIn={userID} />
-        <main>
+        <main className="w-full">
         <NavBar loggedIn={userID}/>
           <div className="m-10 p-0">
             <h3 className="text-4xl">{greet}</h3>

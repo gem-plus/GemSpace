@@ -52,7 +52,7 @@ function ProfilePic() {
     <>
       <SidebarProvider>
         <AppSidebar>
-          <main>
+          <main className="w-full">
             <NavBar loggedIn={state.userID}/>
             <div className="m-10 p-0">
               <h4 className="text-3xl">Edit Your Profile Picture</h4>
