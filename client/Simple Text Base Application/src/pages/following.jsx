@@ -1,12 +1,14 @@
 import Posts from "../components/posts";
-import NavBar from "../components/navbar"
+import NavBar from "../components/navbar";
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/sidebar";
+import { useNavigate } from "react-router-dom";
 
 function Following() {
   const [posts, setposts] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function followingPost() {
@@ -14,6 +16,7 @@ function Following() {
         method: "GET",
         credentials: "include",
       });
+      if (res.status === 401) return navigate("/auth");
       const data = await res.json();
       if (data.success) {
         setposts(data.post);
@@ -44,7 +47,7 @@ function Following() {
       <SidebarProvider>
         <AppSidebar loggedIn={currentUser} />
         <main className="w-full">
-          <NavBar loggedIn={currentUser}/>
+          <NavBar loggedIn={currentUser} />
           {[...posts].map((post) => (
             <Posts
               key={post._id}
