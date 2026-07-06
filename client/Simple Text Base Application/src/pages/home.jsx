@@ -1,4 +1,5 @@
-import HomePost from "../components/homepost";
+import Posts from "../components/posts";
+import NavBar from "../components/navbar"
 import { useEffect, useState } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/sidebar";
@@ -12,7 +13,7 @@ function Home() {
 
   async function loadPosts() {
     try {
-      if (loading||!hasMore) return new Error("no more posts");
+      if (loading || !hasMore) return new Error("no more posts");
 
       setLoading(true);
 
@@ -30,14 +31,12 @@ function Home() {
           return [...prev, ...newPosts];
         });
       }
-    }
-    catch(error){
+    } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
-    finally{
-      setLoading(false)
-    }
-    }
+  }
 
   useEffect(() => {
     async function fetchUser() {
@@ -71,6 +70,21 @@ function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [page, hasMore]);
 
+  async function handleFollowing(postOwner) {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/following`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ postOwner }),
+      });
+      const data = await res.json();
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async function handleLike(postID) {
     try {
       const res = await fetch(
@@ -91,15 +105,19 @@ function Home() {
     <>
       <SidebarProvider>
         <AppSidebar loggedIn={currentUser} />
-        <main>
+        <main className="w-full">
+        <NavBar loggedIn={currentUser}/>
           {[...posts].map((post) => (
-            <HomePost
+            <Posts
               key={post._id}
+              page="home"
               onLike={handleLike}
+              onFollowing={handleFollowing}
               userID={currentUser}
               postID={post._id}
               likes={post.likes}
               username={post.user.username}
+              postOwner={post.user._id}
               avatarURL={post.avatarURL}
               content={post.content}
               date={post.date}

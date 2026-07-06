@@ -2,6 +2,8 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
+import NavBar from "../components/navbar"
+
 
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -60,6 +62,7 @@ function Edit() {
     <SidebarProvider>
       <AppSidebar />
       <main h-screen w-full>
+        <NavBar loggedIn={state.userID}/>
         <div className="m-10 p-0">
           <Field className="mt-10">
             <FieldLabel className="text-3xl" htmlFor="textarea-message">

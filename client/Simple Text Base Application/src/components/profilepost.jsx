@@ -27,7 +27,7 @@ function Post({ username, content , postID , likes, userID , date , onLike , onD
   }
 
   function handleEdit() {
-    navigate("/edit", { state: { postID } });
+    navigate("/edit", { state: { postID ,userID} });
   }
 
   async function handleDelete() {

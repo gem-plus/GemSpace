@@ -43,7 +43,13 @@ function AppSidebar({ loggedIn }) {
   return (
     <Sidebar>
       <SidebarHeader>
-        <img src={logo} alt="logo" className="max-w-15 h-auto pl-4" />
+        <a
+          onClick={() => {
+            navigate("/");
+          }}
+        >
+          <img src={logo} alt="logo" className="max-w-15 h-auto pl-4" />
+        </a>
       </SidebarHeader>
 
       <SidebarContent>
@@ -58,7 +64,12 @@ function AppSidebar({ loggedIn }) {
             >
               Home
             </SidebarMenuButton>
-            <SidebarMenuButton className="py-6 pl-6 my-1">
+            <SidebarMenuButton
+              onClick={() => {
+                navigate("/following");
+              }}
+              className="py-6 pl-6 my-1"
+            >
               Following
             </SidebarMenuButton>
             <SidebarMenuButton className="py-6 pl-6 my-1">

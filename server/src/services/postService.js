@@ -6,7 +6,7 @@ async function home(page = 1, limit = 6) {
   const skip = (page - 1) * limit;
   const posts = await postModel
     .find()
-    .populate("user", "username profilePic")
+    .populate("user", "username profilePic _id")
     .sort({ date: -1 })
     .skip(skip)
     .limit(limit);
@@ -65,6 +65,31 @@ async function update({ id, content }) {
   }
 }
 
+async function following(userID, postOwner) {
+  try {
+    const user = await userModel.findOne({ _id: userID });
+    if (!user) throw new Error("no user found");
+
+    const owner = await userModel.findOne({ _id: postOwner });
+    if (!owner) throw new Error("no user found");
+
+    let isfollow = user.following.includes(postOwner);
+
+    if (isfollow) {
+      user.following.pull(postOwner);
+    } else {
+      user.following.push(postOwner);
+    }
+
+    await user.save();
+
+    return !isfollow;
+  } catch (error) {
+    console.error(error);
+    throw error;
+  }
+}
+
 async function like({ postid, userid }) {
   try {
     let post = await postModel.findOne({ _id: postid });
@@ -113,5 +138,6 @@ module.exports = {
   edit,
   update,
   like,
+  following,
   postDelete,
 };

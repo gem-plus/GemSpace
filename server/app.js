@@ -4,65 +4,77 @@ const cors = require("cors");
 const passport = require("passport");
 const session = require("express-session");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
-const helmet = require("helmet")
-const {limiter} = require("./src/middleware/rateLimiter");
-const bodyParser = require('body-parser');
-const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require("helmet");
+const { limiter } = require("./src/middleware/rateLimiter");
+const bodyParser = require("body-parser");
+const mongoSanitize = require("express-mongo-sanitize");
 
 const authRoute = require("./src/routes/auth");
 const postRoute = require("./src/routes/post");
 const cloudinaryDB = require("./src/config/cloudinary.js");
 const connectDB = require("./src/config/mongodb");
-const userModel = require("./src/models/user")
-const cookieParser =require("cookie-parser")
-const PORT = process.env.PORT ;
+const userModel = require("./src/models/user");
+const cookieParser = require("cookie-parser");
+const PORT = process.env.PORT;
 
 const app = express();
 
 connectDB();
-app.use(helmet({
-        crossOriginResourcePolicy: { policy: "cross-origin" },
-}));
-app.use(cors({
-
-    origin: [process.env.CLIENT_URL,process.env.LOCAL_URL],
-    credentials: true
-}));
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+  }),
+);
+app.use(
+  cors({
+    origin: [process.env.CLIENT_URL, process.env.LOCAL_URL],
+    credentials: true,
+  }),
+);
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(session({ secret: process.env.SESSION_SECRET, resave: false, saveUninitialized: false }));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+  }),
+);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(mongoSanitize());
 
-app.use("/",authRoute);
-app.use("/",postRoute);
-app.use("/uploads", express.static("uploads"));//to be removed
+app.use("/", authRoute);
+app.use("/", postRoute);
 
-passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    callbackURL: process.env.CALLBACK_URL
-}, async (accessToken, refreshToken, profile, done) => {
-    let user = await userModel.findOne({ email: profile.emails[0].value });
-    if (!user) {
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.CALLBACK_URL,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      let user = await userModel.findOne({ email: profile.emails[0].value });
+      if (!user) {
         user = await userModel.create({
-            name: profile.displayName,
-            email: profile.emails[0].value,
-            username: profile.emails[0].value.split("@")[0],
-            age: 18,
-            password: "google-oauth"
+          name: profile.displayName,
+          email: profile.emails[0].value,
+          username: profile.emails[0].value.split("@")[0],
+          age: 18,
+          password: "google-oauth",
         });
-    }
-    return done(null, user);
-}));
+      }
+      return done(null, user);
+    },
+  ),
+);
 
 passport.serializeUser((user, done) => done(null, user._id));
 passport.deserializeUser(async (id, done) => {
-    const user = await userModel.findById(id);
-    done(null, user);
+  const user = await userModel.findById(id);
+  done(null, user);
 });
 
-
-app.listen(PORT ||3000);
+app.listen(PORT || 3000);

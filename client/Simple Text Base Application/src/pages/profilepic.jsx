@@ -1,11 +1,16 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useLocation } from "react-router-dom";
 import imageCompression from "browser-image-compression";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import AppSidebar from "@/components/sidebar";
+import NavBar from "../components/navbar";
 
 function ProfilePic() {
   const [file, setFile] = useState(null);
   const navigate = useNavigate();
-  
+  const location = useLocation();
+  const state = location.state;
+
   async function handleProfilePic(e) {
     e.preventDefault();
 
@@ -45,30 +50,37 @@ function ProfilePic() {
 
   return (
     <>
-      <div className="m-10 p-0">
-        <h4 className="text-3xl">Edit Your Profile Picture</h4>
-        <div className=" mt-10">
-          <form onSubmit={handleProfilePic}>
-            <label
-              htmlFor="file-upload"
-              className="p-4 w-75  block border-3 rounded-md bg-amber-50 text-black border-black"
-            >
-              Select Profile Picture
-            </label>
-            <input
-              id="file-upload"
-              type="file"
-              hidden
-              onChange={(e) => handleFileChange(e)}
-            />
-            <input
-              className="mt-5 p-2 text-white rounded-md bg-amber-400"
-              type="submit"
-              value="Upload Profile Pic"
-            />
-          </form>
-        </div>
-      </div>
+      <SidebarProvider>
+        <AppSidebar>
+          <main>
+            <NavBar loggedIn={state.userID}/>
+            <div className="m-10 p-0">
+              <h4 className="text-3xl">Edit Your Profile Picture</h4>
+              <div className=" mt-10">
+                <form onSubmit={handleProfilePic}>
+                  <label
+                    htmlFor="file-upload"
+                    className="p-4 w-75  block border-3 rounded-md bg-amber-50 text-black border-black"
+                  >
+                    Select Profile Picture
+                  </label>
+                  <input
+                    id="file-upload"
+                    type="file"
+                    hidden
+                    onChange={(e) => handleFileChange(e)}
+                  />
+                  <input
+                    className="mt-5 p-2 text-white rounded-md bg-amber-400"
+                    type="submit"
+                    value="Upload Profile Pic"
+                  />
+                </form>
+              </div>
+            </div>
+          </main>
+        </AppSidebar>
+      </SidebarProvider>
     </>
   );
 }

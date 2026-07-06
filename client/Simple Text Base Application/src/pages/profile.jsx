@@ -1,4 +1,5 @@
 import Post from "../components/profilepost";
+import NavBar from "../components/navbar"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
@@ -13,6 +14,7 @@ function Profile() {
   const [name, setName] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [username, setUsername] = useState("");
+  const [totalFollowing, setTotalFollowing] = useState("0")
   const [form, setForm] = useState({ content: "" });
   const [userID, setUserID] = useState("");
 
@@ -29,8 +31,8 @@ function Profile() {
       setUserID(data.userID);
       setName(data.name);
       setProfilePic(data.profilePic);
-      console.log(data);
       setUsername(data.username);
+      setTotalFollowing(data.totalfollowing);
     }
     checkAuth();
   }, [navigate]);
@@ -86,16 +88,17 @@ function Profile() {
       <SidebarProvider>
         <AppSidebar loggedIn={userID} />
         <main>
+        <NavBar loggedIn={userID}/>
           <div className="m-10 p-0">
             <h3 className="text-4xl">{greet}</h3>
             <div className="mt-5 mb-5 grid grid-cols-3 gap-5 w-1/3">
               <div className="profilePic">
-                <a onClick={() => navigate("/profilepic")}>
+                <a onClick={() => navigate("/profilepic",{state:{userID}})}>
                   {profilePic ? (
                     <img
                       src={profilePic}
                       alt="Profile Pic"
-                      className="w-[150px] h-[150px] rounded-full object-coverrounded"
+                      className="w-37.5 h-37.5 rounded-full object-coverrounded"
                     />
                   ) : (
                     <span>Profile Picture</span>
@@ -104,11 +107,11 @@ function Profile() {
               </div>
               <div className="follower">
                 <h3>follower</h3>
-                <span>3</span>
+                <span>0</span>
               </div>
               <div className="following">
                 <h3>following</h3>
-                <span>4</span>
+                <span>{totalFollowing}</span>
               </div>
             </div>
             <hr />

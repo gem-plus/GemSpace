@@ -18,15 +18,32 @@ function HomePost({
   content,
   userID,
   postID,
+  postOwner,
   likes,
   date,
+  page,
   onLike,
+  onFollowing,
 }) {
+  const [followbtn, setFollowBtn] = useState(
+    userID && postOwner !== userID ? "follow" : "",
+  );
+
   const [likebtn, setlikebtn] = useState(
     userID && likes.includes(userID) ? "unlike" : "like",
   );
   const [error, setError] = useState(null);
   const [likeCount, setLikeCount] = useState(likes.length);
+
+  async function handleFollowing() {
+    if (!userID) {
+      setError("Please login !");
+      return;
+    }
+
+    const data = await onFollowing(postOwner);
+    setFollowBtn(data.isfollow ? "unfollow" : "follow");
+  }
 
   async function handleLike() {
     if (!userID) {
@@ -43,14 +60,22 @@ function HomePost({
     <>
       <div className="ml-10 mt-5">
         <Card size="sm" className="w-250 h-48 ">
-          <CardHeader>
-            <div className="flex items-center gap-4">
-            <img src={avatarURL} alt="Avatar Pic" className=" w-10 h-10  rounded-full object-coverrounded" />
-            <div >
-            <CardTitle>@{username}</CardTitle>
-            <small>{dayjs(date).fromNow()}</small>
+          <CardHeader className="flex items-center gap-4">
+            <img
+              src={avatarURL}
+              alt="Avatar Pic"
+              className=" w-10 h-10  rounded-full object-coverrounded"
+            />
+            <div>
+              <CardTitle>@{username}</CardTitle>
+              <small>{dayjs(date).fromNow()}</small>
             </div>
-            </div>
+           {page === "home" && 
+           <div>
+              <button className=" text-red-500" onClick={handleFollowing}>
+                {followbtn}
+              </button>
+            </div>}
           </CardHeader>
           <CardContent>
             <p className="max-h-64 overflow-y-auto wrap-break-word">
