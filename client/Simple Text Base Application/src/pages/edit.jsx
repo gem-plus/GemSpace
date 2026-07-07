@@ -2,11 +2,10 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import NavBar from "../components/navbar"
-
+import NavBar from "../components/navbar";
 
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import AppSidebar from "@/components/sidebar";
 
 function Edit() {
@@ -15,6 +14,11 @@ function Edit() {
   const state = location.state;
   const navigate = useNavigate();
 
+  if (!location.state?.postID && !location.state?.userID) {
+    return <Navigate to="/profile" replace />;
+  }
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(() => {
     async function fetchContent() {
       const res = await fetch(
@@ -61,9 +65,9 @@ function Edit() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <main h-screen w-full>
-        <NavBar loggedIn={state.userID}/>
-        <div className="m-10 p-0">
+      <main className="w-full">
+        <NavBar loggedIn={state.userID} />
+        <div className="w-1/4 m-10 p-0">
           <Field className="mt-10">
             <FieldLabel className="text-3xl" htmlFor="textarea-message">
               Edit
@@ -71,7 +75,6 @@ function Edit() {
             <FieldDescription>Enter your new message below.</FieldDescription>
             <form onSubmit={handleSubmit}>
               <Textarea
-                // className="w-1/4"
                 name="content"
                 value={content}
                 onChange={handleChange}

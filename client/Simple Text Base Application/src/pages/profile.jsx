@@ -1,12 +1,13 @@
 import Post from "../components/profilepost";
-import NavBar from "../components/navbar"
+import NavBar from "../components/navbar";
+import AppSidebar from "@/components/sidebar";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from "@/components/sidebar";
+import { Pencil } from "lucide-react";
 
 function Profile() {
   const navigate = useNavigate();
@@ -14,7 +15,7 @@ function Profile() {
   const [name, setName] = useState("");
   const [profilePic, setProfilePic] = useState("");
   const [username, setUsername] = useState("");
-  const [totalFollowing, setTotalFollowing] = useState("0")
+  const [totalFollowing, setTotalFollowing] = useState("0");
   const [form, setForm] = useState({ content: "" });
   const [userID, setUserID] = useState("");
 
@@ -88,22 +89,28 @@ function Profile() {
       <SidebarProvider>
         <AppSidebar loggedIn={userID} />
         <main className="w-full">
-        <NavBar loggedIn={userID}/>
+          <NavBar loggedIn={userID} />
           <div className="m-10 p-0">
             <h3 className="text-4xl">{greet}</h3>
-            <div className="mt-5 mb-5 grid grid-cols-3 gap-5 w-1/3">
+            <div className="mt-5 mb-5 grid grid-cols-3 gap-6 w-1/3">
               <div className="profilePic">
-                <a onClick={() => navigate("/profilepic",{state:{userID}})}>
-                  {profilePic ? (
+                <div className="group relative cursor-pointer">
+                  <a
+                    onClick={() =>
+                      navigate("/profilepic", { state: { userID } })
+                    }
+                  >
                     <img
                       src={profilePic}
-                      alt="Profile Pic"
-                      className="w-37.5 h-37.5 rounded-full object-coverrounded"
+                      alt="Profile Picture"
+                      className=" rounded-full object-cover"
                     />
-                  ) : (
-                    <span>Profile Picture</span>
-                  )}
-                </a>
+
+                  <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                    <Pencil className="h-8 w-8 text-white" />
+                  </div>
+                  </a>
+                </div>
               </div>
               <div className="follower">
                 <h3>follower</h3>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate , useLocation } from "react-router-dom";
+import { Navigate, useNavigate , useLocation } from "react-router-dom";
 import imageCompression from "browser-image-compression";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/sidebar";
@@ -10,6 +10,11 @@ function ProfilePic() {
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state;
+
+  if (!location.state?.userID) {
+    return <Navigate to="/profile" replace />;
+  }
+
 
   async function handleProfilePic(e) {
     e.preventDefault();
@@ -51,11 +56,11 @@ function ProfilePic() {
   return (
     <>
       <SidebarProvider>
-        <AppSidebar>
+        <AppSidebar/>
           <main className="w-full">
-            <NavBar loggedIn={state.userID}/>
-            <div className="m-10 p-0">
-              <h4 className="text-3xl">Edit Your Profile Picture</h4>
+             <NavBar loggedIn={state.userID}/> 
+             <div className="m-10 p-0">
+               <h4 className="text-3xl">Edit Your Profile Picture</h4>
               <div className=" mt-10">
                 <form onSubmit={handleProfilePic}>
                   <label
@@ -77,9 +82,9 @@ function ProfilePic() {
                   />
                 </form>
               </div>
-            </div>
+             </div>
           </main>
-        </AppSidebar>
+
       </SidebarProvider>
     </>
   );

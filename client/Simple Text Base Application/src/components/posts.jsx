@@ -64,7 +64,7 @@ function HomePost({
             <img
               src={avatarURL}
               alt="Avatar Pic"
-              className=" w-10 h-10  rounded-full object-coverrounded"
+              className="rounded-full object-coverrounded"
             />
             <div>
               <CardTitle>@{username}</CardTitle>
